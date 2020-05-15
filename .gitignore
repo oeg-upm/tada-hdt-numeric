@@ -1,3 +1,25 @@
+*.swp
+.DS_Store
+
+# Qt project files
+*.qbs
+*.qbs.user
+*.autosave
+*.log
+
+# Generated files
+build
+bin
+*.hdt
+*.hdt.index.v1-1
+
+
+# Tests/Coverage output
+*.gcda
+*.gcno
+coverage.info
+
+
 # Prerequisites
 *.d
 
