@@ -61,6 +61,8 @@ $(OBJS_ABS): $(SOURCES_ABS) $(OUT_DIRS)
 
 
 cov:	
+	mkdir -p generated_files_test
+	rm -Rf generated_files_test/*
 	$(CC) $(CXXFLAGS) -c -fprofile-arcs -ftest-coverage -fPIC  $(TSOURCES_ABS)
 	mv *.o build/
 	$(CC) $(CXXFLAGS) -o $(COVAPP) -fprofile-arcs -ftest-coverage $(TOBJS_ABS) $(TLIBS) 
