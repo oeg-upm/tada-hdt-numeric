@@ -11,6 +11,16 @@ dbr:boxer1 rdfs:label "boxer1" .
 dbr:boxer2 rdfs:label "boxer2" .
 dbr:boxer3 rdfs:label "boxer3" .
 
+dbr:boxer1 dbp:height 170 .
+dbr:boxer2 dbp:height 180 .
+dbr:boxer3 dbp:height 173 .
+
+dbr:boxer1 dbp:weight 74 .
+dbr:boxer2 dbp:weight 81 .
+dbr:boxer3 dbp:weight 75 .
+
+
+
 dbr:golferboxer1 rdfs:label "golferboxer1" .
 
 dbr:amaboxer4 rdfs:label "amaboxer4"  .
