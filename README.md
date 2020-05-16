@@ -4,3 +4,8 @@
 # tada-hdt-numeric
 This application annotate numeric columns in tabular data with properties from HDT-compressed knowledge bases.
 
+# Run tests
+`make; make test`
+
+# Run tests with Docker
+`sh scripts/run_tests_in_docker.sh`
