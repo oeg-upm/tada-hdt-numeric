@@ -1,5 +1,7 @@
 *.swp
 .DS_Store
+generated_files
+generated_files_test
 
 # Qt project files
 *.qbs

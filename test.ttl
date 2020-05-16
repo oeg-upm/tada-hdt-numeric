@@ -1,0 +1,156 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dbo: <http://dbpedia.org/ontology/> .
+@prefix dbpp: <http://dbpedia.org/ontology/Person/> .
+@prefix dbr: <http://dbpedia.org/resource/> .
+@prefix dbp: <http://dbpedia.org/property/> .
+
+
+
+dbr:boxer1 rdfs:label "boxer1" .
+dbr:boxer2 rdfs:label "boxer2" .
+dbr:boxer3 rdfs:label "boxer3" .
+
+dbr:golferboxer1 rdfs:label "golferboxer1" .
+
+dbr:amaboxer4 rdfs:label "amaboxer4"  .
+dbr:amaboxer5 rdfs:label "amaboxer5"  .
+dbr:amaboxer6 rdfs:label "amaboxer6"  .
+
+
+dbr:swimmer1 rdfs:label "swimmer1" .
+
+
+dbr:footballp1 rdfs:label "common_name_1" .
+dbr:basketballp1 rdfs:label "common_name_1" .
+dbr:volleyballp1 rdfs:label "common_name_1" .
+
+dbr:footballp2 rdfs:label "common_name_2" .
+dbr:basketballp2 rdfs:label "common_name_2" .
+dbr:volleyballp2 rdfs:label "common_name_2" .
+
+
+dbr:footballp3 rdfs:label "common_name_3" .
+dbr:basketballp3 rdfs:label "common_name_3" .
+dbr:volleyballp3 rdfs:label "common_name_3" .
+
+dbr:volleyballp4 rdfs:label "volleyballp4" .
+
+
+dbr:footballp1 rdf:type dbo:FootballPlayer .
+dbr:basketballp1 rdf:type dbo:BasketballPlayer .
+dbr:volleyballp1 rdf:type  dbo:VolleyballPlayer .
+
+dbr:footballp2 rdf:type dbo:FootballPlayer .
+dbr:basketballp2 rdf:type dbo:BasketballPlayer .
+dbr:volleyballp2 rdf:type  dbo:VolleyballPlayer .
+
+dbr:footballp3 rdf:type dbo:FootballPlayer .
+dbr:basketballp3 rdf:type dbo:BasketballPlayer .
+dbr:volleyballp3 rdf:type  dbo:VolleyballPlayer .
+
+dbr:volleyballp4 rdf:type  dbo:VolleyballPlayer .
+dbr:basketballp4 rdf:type dbo:BasketballPlayer .
+dbr:footballp4 rdf:type dbo:FootballPlayer .
+
+
+
+dbr:footballp1 dbp:city "city1" .
+dbr:footballp2 dbp:city "city2" .
+
+dbr:footballp1 dbp:country "country1" .
+
+
+
+
+
+dbr:UK rdf:type dbo:Country .
+dbr:UK rdfs:label "UK" .
+dbr:Spain rdf:type dbo:Country .
+dbr:Spain rdfs:label "Spain" .
+dbr:Italy rdf:type dbo:Country .
+dbr:Italy rdfs:label "Italy" .
+
+
+dbr:wrestler1 rdf:type dbo:Wrestler .
+dbr:wrestler1 rdfs:label "wr_common_1" .
+dbr:wrestler1 dbp:country dbr:UK .
+dbr:wrestler2 rdf:type dbo:Wrestler .
+dbr:wrestler2 rdfs:label "wr_common_2" .
+dbr:wrestler2 dbp:country dbr:Spain .
+dbr:wrestler3 rdf:type dbo:Wrestler .
+dbr:wrestler3 rdfs:label "wrestler3".
+
+
+dbr:rower1 rdf:type dbo:Rower .
+dbr:rower1 rdfs:label "wr_common_1" .
+dbr:rower2 rdf:type dbo:Rower .
+dbr:rower2 rdfs:label "wr_common_2" .
+
+
+dbr:cyclist1 rdf:type dbo:Cyclist .
+dbr:cyclist2 rdf:type dbo:Cyclist .
+
+dbr:cyclist1 rdfs:label "cyclist1"@en .
+dbr:cyclist2 rdfs:label "cyclist2"@en .
+
+
+
+dbr:boxer1 rdf:type dbo:Boxer  .
+dbr:boxer2 rdf:type dbo:Boxer  .
+dbr:boxer2 rdf:type dbo:Athlete  .
+dbr:boxer2 rdf:type dbo:Person .
+dbr:boxer3 rdf:type dbo:Boxer  .
+
+dbr:golferboxer1 rdf:type dbo:Boxer .
+dbr:golferboxer1 rdf:type dbo:GolfPlayer .
+
+dbr:amaboxer4 rdf:type dbo:AmateurBoxer  .
+dbr:amaboxer5 rdf:type dbo:AmateurBoxer  .
+dbr:amaboxer6 rdf:type dbo:AmateurBoxer  .
+
+dbr:swimmer1 rdf:type dbo:Swimmer .
+
+
+dbr:baseball1 rdf:type dbo:BaseballPlayer .
+dbr:baseball1 rdfs:label "Adam Pie"@en .
+
+dbr:baseball2 rdf:type dbo:BaseballPlayer .
+dbr:baseball2 rdfs:label "John Carrot"@en .
+
+
+
+dbo:Swimmer rdfs:subClassOf dbo:SwimmerExtraRoot .
+dbo:Swimmer rdfs:subClassOf dbo:Athlete .
+
+
+dbo:FootballPlayer rdfs:subClassOf dbo:Athlete .
+dbo:BasketballPlayer rdfs:subClassOf dbo:Athlete .
+dbo:VolleyballPlayer rdfs:subClassOf dbo:Athlete .
+
+
+dbo:BaseballPlayer rdfs:subClassOf dbo:Athlete .
+dbo:Cyclist rdfs:subClassOf dbo:Athlete .
+dbo:Rower rdfs:subClassOf dbo:Athlete .
+dbo:Wrestler rdfs:subClassOf dbo:Athlete .
+dbo:Boxer rdfs:subClassOf dbo:Athlete .
+dbo:AmateurBoxer rdfs:subClassOf dbo:Boxer .
+dbo:GolfPlayer rdfs:subClassOf dbo:Athlete .
+dbo:Athlete rdfs:subClassOf dbo:Person .
+dbo:Person rdfs:subClassOf dbo:Agent .
+dbo:Company rdfs:subClassOf dbo:Organisation .
+dbo:Organisation rdfs:subClassOf dbo:Agent .
+
+dbo:BaseballPlayer rdf:type rdfs:Class .
+dbo:Cyclist rdf:type rdfs:Class .
+dbo:Rower rdf:type rdfs:Class .
+dbo:Wrestler rdf:type rdfs:Class .
+dbo:Boxer rdf:type rdfs:Class .
+dbo:AmateurBoxer rdf:type rdfs:Class .
+dbo:GolfPlayer rdf:type rdfs:Class .
+dbo:Athlete rdf:type rdfs:Class .
+dbo:Person rdf:type rdfs:Class .
+dbo:Company rdf:type rdfs:Class .
+dbo:Organisation rdf:type rdfs:Class .
+dbo:Agent rdf:type rdfs:Class .
+

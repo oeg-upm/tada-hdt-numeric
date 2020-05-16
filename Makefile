@@ -5,7 +5,7 @@ LIBALIAS = libtadahdtnumeric.so
 HDIR = /usr/local/include/tada_hdt_numeric
 LIBDIR = /usr/local/lib
 
-OUT_DIRS = build bin
+OUT_DIRS = build bin generated_files
 NOMOBJS = profiler.o
 OBJS = $(NOMOBJS) main.o 
 TOBJS = $(NOMOBJS) tests.o
@@ -104,6 +104,8 @@ run:
 	
 
 test:
+	mkdir -p generated_files_test
+	rm -Rf generated_files_test/*
 	$(CC)  ${CXXFLAGS} -c $(TSOURCES_ABS)
 	mv *.o build/
 	$(CC) -o $(TESTAPP) $(TOBJS_ABS) $(TLIBS)
@@ -113,6 +115,9 @@ bin:
 	mkdir -p $@
 
 build:
+	mkdir -p $@
+
+generated_files:
 	mkdir -p $@
 
 clean:
