@@ -63,14 +63,14 @@ namespace {
         Profiler* profiler;
         profiler = new Profiler(hdt_file);
         profiler->set_logger(log_file);
-        profiler->set_properties_dir(p_test_dir);
-        ASSERT_STREQ(profiler->get_properties_dir().c_str(),p_test_dir.c_str());
+        profiler->set_base_gen_dir(p_test_dir);
+        ASSERT_STREQ(profiler->get_base_gen_dir().c_str(),p_test_dir.c_str());
         profiler->profile_classes();
         ifstream input;
         string classes_f_dir;
         string classes_fname ="classes.txt" ;
         profiler->set_classes_fname(classes_fname);
-        classes_f_dir = profiler->merge_dirs(profiler->get_properties_dir(),profiler->get_classes_fname());
+        classes_f_dir = profiler->merge_dirs(profiler->get_base_gen_dir(),profiler->get_classes_fname());
         input.open(classes_f_dir.c_str());
         ASSERT_TRUE(input.good());
         string content="", line;
@@ -95,6 +95,34 @@ namespace {
         delete profiler;
     }
 
+    TEST(ProfilerTest, profile_properties) {
+        Profiler* profiler;
+        profiler = new Profiler(hdt_file);
+        profiler->set_logger(log_file);
+        profiler->set_base_gen_dir(p_test_dir);
+        ASSERT_STREQ(profiler->get_base_gen_dir().c_str(),p_test_dir.c_str());
+        profiler->profile_classes();
+        profiler->profile_properties();
+        ifstream input;
+        string boxer_properties_dir;
+        boxer_properties_dir = profiler->merge_dirs(profiler->get_base_gen_dir(),profiler->get_properties_all_dir());
+        boxer_properties_dir = profiler->merge_dirs(boxer_properties_dir,"Boxer.txt");
+        cout << "Boxer properties dir: "<<boxer_properties_dir<<endl;
+        input.open(boxer_properties_dir.c_str());
+        ASSERT_TRUE(input.good());
+        string content="", line;
+        while(getline(input, line)){
+            content += line+"\n";
+        }
+        cout <<"content: \n"<<content<<endl;
+        string golden_content;
+        golden_content = "http://dbpedia.org/property/height\n"
+            "http://dbpedia.org/property/weight\n";
+        ASSERT_NE(content.find("http://dbpedia.org/property/height"),std::string::npos);
+        ASSERT_NE(content.find("http://dbpedia.org/property/weight"),std::string::npos);
+        ASSERT_EQ(content.find("http://dbpedia.org/property/NEW"),std::string::npos);
+        delete profiler;
+    }
 
     TEST(ProfilerTest, merge_dirs) {
         Profiler* profiler;
@@ -105,7 +133,6 @@ namespace {
         ASSERT_STREQ("/home/ubuntu/docs", profiler->merge_dirs("/home/ubuntu", "/docs").c_str());
         ASSERT_STREQ("/home/ubuntu/docs", profiler->merge_dirs("/home/ubuntu/", "/docs").c_str());
     }
-
 
 
 }// namespace

@@ -38,18 +38,25 @@ class Profiler{
     void set_dir_sep(string sep);
     string get_dir_sep();
     string merge_dirs(string base_dir, string relative_dir);
-    void set_properties_dir(string);
-    string get_properties_dir();
+    void set_base_gen_dir(string);
+    string get_base_gen_dir();
     void set_classes_fname(string);
     string get_classes_fname();
+    void set_min_objects(long);
+    long get_min_objects();
     bool file_exists(string);
+    string get_fname_from_uri(string);
+    string get_properties_all_dir();
+    string get_properties_num_dir();
   private:
     void write_classes(std::list<string>*);
     EasyLogger* m_logger=nullptr;
     hdt::HDT* m_hdt=nullptr;
     string m_classes_fname="classes.txt";
-    string m_properties_dir="generated_files";
+    string m_base_gen_dir="generated_files";
+    string m_properties_all_dir="all_properties";
+    string m_properties_num_dir="num_properties";
     string m_dir_sep="/";
-    double min_objects=2;
+    long m_min_objects=2;
 };
 #endif // PROF_H

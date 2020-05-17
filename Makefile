@@ -5,7 +5,7 @@ LIBALIAS = libtadahdtnumeric.so
 HDIR = /usr/local/include/tada_hdt_numeric
 LIBDIR = /usr/local/lib
 
-OUT_DIRS = build bin generated_files
+OUT_DIRS = build bin generated_files generated_files/all_properties generated_files/num_properties
 NOMOBJS = profiler.o
 OBJS = $(NOMOBJS) main.o 
 TOBJS = $(NOMOBJS) tests.o
@@ -63,6 +63,8 @@ $(OBJS_ABS): $(SOURCES_ABS) $(OUT_DIRS)
 cov:	
 	mkdir -p generated_files_test
 	rm -Rf generated_files_test/*
+	mkdir -p generated_files_test/all_properties
+	mkdir -p generated_files_test/num_properties
 	$(CC) $(CXXFLAGS) -c -fprofile-arcs -ftest-coverage -fPIC  $(TSOURCES_ABS)
 	mv *.o build/
 	$(CC) $(CXXFLAGS) -o $(COVAPP) -fprofile-arcs -ftest-coverage $(TOBJS_ABS) $(TLIBS) 
@@ -108,6 +110,8 @@ run:
 test:
 	mkdir -p generated_files_test
 	rm -Rf generated_files_test/*
+	mkdir -p generated_files_test/all_properties
+	mkdir -p generated_files_test/num_properties
 	$(CC)  ${CXXFLAGS} -c $(TSOURCES_ABS)
 	mv *.o build/
 	$(CC) -o $(TESTAPP) $(TOBJS_ABS) $(TLIBS)
@@ -120,6 +124,12 @@ build:
 	mkdir -p $@
 
 generated_files:
+	mkdir -p $@
+
+generated_files/all_properties:
+	mkdir -p $@
+
+generated_files/num_properties:
 	mkdir -p $@
 
 clean:

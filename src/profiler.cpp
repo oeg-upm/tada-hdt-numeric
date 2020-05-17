@@ -41,12 +41,24 @@ void Profiler::profile_properties() {
     for(auto it=classes->cbegin();it!=classes->cend();it++){
         profile_class_properties(*it);
     }
+    delete classes;
 }
 
 void Profiler::profile_class_properties(string class_uri){
     std::list<string>* properties;
+    string fname, fdir;
     properties = get_class_properties(class_uri);
-    // To continue
+    m_logger->log("profile_class_properties> "+to_string(properties->size()) + " for the class: "+class_uri);
+    fname = get_fname_from_uri(class_uri);
+    fdir = merge_dirs(m_base_gen_dir,m_properties_all_dir);
+    fdir = merge_dirs(fdir, fname);
+    ofstream out;
+    out.open(fdir);
+    for(auto it=properties->cbegin();it!=properties->cend();it++){
+        out << *it << endl;
+    }
+    out.close();
+    delete properties;
 }
 
 std::list<string>* Profiler::get_class_properties(string class_uri){
@@ -54,7 +66,7 @@ std::list<string>* Profiler::get_class_properties(string class_uri){
     hdt::TripleString * triple;
     std::list<string>* properties = new std::list<string>;
     std::list<string>* instances = get_instances(class_uri);
-    std::unordered_map<string,unsigned long> *prop_counts = new std::unordered_map<string,unsigned long>;
+    std::unordered_map<string,long> *prop_counts = new std::unordered_map<string,long>;
     for(auto it_inst=instances->cbegin();it_inst!=instances->cend();it_inst++){
         itt = m_hdt->search(it_inst->c_str(),"", "");
         while(itt->hasNext()){
@@ -71,7 +83,7 @@ std::list<string>* Profiler::get_class_properties(string class_uri){
     m_logger->log("get_class_properties> properties counts: ");
     for(auto it=prop_counts->cbegin();it!=prop_counts->cend();it++){
         m_logger->log(it->first+" - "+to_string(it->second));
-        if(it->second >= min_objects){
+        if(it->second >= m_min_objects){
             properties->push_back(it->first);
         }
     }
@@ -93,6 +105,23 @@ std::list<string>* Profiler::get_instances(string class_uri){
     return instances;
 }
 
+string Profiler::get_fname_from_uri(string s){
+    string tt, token;
+    istringstream ist;
+    ist.str(s);
+    while(getline(ist, tt, '/')) {
+        if(tt!="") {
+            token = tt;
+        }
+    }
+    ist.str(token);
+    while(getline(ist, tt, '#')) {
+        if(tt!="") {
+            token = tt;
+        }
+    }
+    return token+".txt";
+}
 
 
 void Profiler::set_dir_sep(string sep) {
@@ -117,7 +146,7 @@ std::list<string>* Profiler::get_classes_from_hdt() {
     hdt::IteratorTripleString* itt;
     hdt::TripleString* triple;
     itt = m_hdt->search("", "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", rdfs_class.c_str());
-    m_logger->log("get_classes> fetching classes from the hdt");
+    m_logger->log("get_classes_from_hdt> fetching classes from the hdt");
     while(itt->hasNext()) {
         triple = itt->next();
         class_uri = triple->getSubject();
@@ -127,25 +156,21 @@ std::list<string>* Profiler::get_classes_from_hdt() {
         }
     }
     delete itt;
-    m_logger->log("get_classes> number of fetched classes: "+to_string(classes->size()));
+    m_logger->log("get_classes_from_hdt> number of fetched classes: "+to_string(classes->size()));
     return classes;
 }
 
 std::list<string>* Profiler::get_unprocessed_classes() {
     std::list<string>* classes = new std::list<string>;
     ifstream input;
-    string line, token="", tt;
-    istringstream ist;
+    string line, fname, prop_dir;
     m_logger->log("get_classes_from_txt> before the loop");
-    input.open(merge_dirs(get_properties_dir(), get_classes_fname()));
+    input.open(merge_dirs(m_base_gen_dir, get_classes_fname()));
     while(getline(input, line)) {
-        ist.str(line);
-        while(getline(ist, tt, '/')) {
-            if(tt!="") {
-                token = tt;
-            }
-        }
-        if(!file_exists(merge_dirs(get_properties_dir(), token+".txt"))){
+        fname = get_fname_from_uri(line);
+        prop_dir = merge_dirs(m_base_gen_dir, m_properties_all_dir);
+        prop_dir = merge_dirs(prop_dir, fname);
+        if(!file_exists(prop_dir)){
             classes->push_back(line);
         }
         else{
@@ -158,7 +183,7 @@ std::list<string>* Profiler::get_unprocessed_classes() {
 
 void Profiler::write_classes(std::list<string>* classes) {
     string classes_fdir;
-    classes_fdir = merge_dirs(m_properties_dir, m_classes_fname);
+    classes_fdir = merge_dirs(m_base_gen_dir, m_classes_fname);
     m_logger->log("write_classes> to write classes to: "+classes_fdir);
     ofstream out_file;
     out_file.open(classes_fdir);
@@ -183,12 +208,12 @@ string Profiler::merge_dirs(string base_dir, string relative_dir) {
     return full_dir;
 }
 
-void Profiler::set_properties_dir(string p_dir) {
-    m_properties_dir = p_dir;
+void Profiler::set_base_gen_dir(string p_dir) {
+    m_base_gen_dir = p_dir;
 }
 
-string Profiler::get_properties_dir() {
-    return m_properties_dir;
+string Profiler::get_base_gen_dir() {
+    return m_base_gen_dir;
 }
 
 bool Profiler::file_exists(string fdir){
@@ -197,3 +222,17 @@ bool Profiler::file_exists(string fdir){
     return input.good();
 }
 
+void Profiler::set_min_objects(long min_objects){
+    m_min_objects = min_objects;
+}
+long Profiler::get_min_objects(){
+    return m_min_objects;
+}
+
+string Profiler::get_properties_all_dir(){
+    return m_properties_all_dir;
+}
+
+string Profiler::get_properties_num_dir(){
+    return m_properties_num_dir;
+}
