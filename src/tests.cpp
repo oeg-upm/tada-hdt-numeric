@@ -64,34 +64,34 @@ namespace {
         profiler = new Profiler(hdt_file);
         profiler->set_logger(log_file);
         profiler->set_base_gen_dir(p_test_dir);
-        ASSERT_STREQ(profiler->get_base_gen_dir().c_str(),p_test_dir.c_str());
+        ASSERT_STREQ(profiler->get_base_gen_dir().c_str(), p_test_dir.c_str());
         profiler->profile_classes();
         ifstream input;
         string classes_f_dir;
         string classes_fname ="classes.txt" ;
         profiler->set_classes_fname(classes_fname);
-        classes_f_dir = profiler->merge_dirs(profiler->get_base_gen_dir(),profiler->get_classes_fname());
+        classes_f_dir = profiler->merge_dirs(profiler->get_base_gen_dir(), profiler->get_classes_fname());
         input.open(classes_f_dir.c_str());
         ASSERT_TRUE(input.good());
         string content="", line;
-        while(getline(input, line)){
+        while(getline(input, line)) {
             content += line+"\n";
         }
         //cout <<"content: \n"<<content<<endl;
         string golden_classes_content;
         golden_classes_content = "http://dbpedia.org/ontology/Agent\n"
-            "http://dbpedia.org/ontology/AmateurBoxer\n"
-            "http://dbpedia.org/ontology/Athlete\n"
-            "http://dbpedia.org/ontology/BaseballPlayer\n"
-            "http://dbpedia.org/ontology/Boxer\n"
-            "http://dbpedia.org/ontology/Cyclist\n"
-            "http://dbpedia.org/ontology/GolfPlayer\n"
-            "http://dbpedia.org/ontology/Organisation\n"
-            "http://dbpedia.org/ontology/Person\n"
-            "http://dbpedia.org/ontology/Rower\n"
-            "http://dbpedia.org/ontology/Wrestler\n"
-            "http://dbpedia.org/ontology/Company\n";
-        ASSERT_STREQ(content.c_str(),golden_classes_content.c_str());
+                                 "http://dbpedia.org/ontology/AmateurBoxer\n"
+                                 "http://dbpedia.org/ontology/Athlete\n"
+                                 "http://dbpedia.org/ontology/BaseballPlayer\n"
+                                 "http://dbpedia.org/ontology/Boxer\n"
+                                 "http://dbpedia.org/ontology/Cyclist\n"
+                                 "http://dbpedia.org/ontology/GolfPlayer\n"
+                                 "http://dbpedia.org/ontology/Organisation\n"
+                                 "http://dbpedia.org/ontology/Person\n"
+                                 "http://dbpedia.org/ontology/Rower\n"
+                                 "http://dbpedia.org/ontology/Wrestler\n"
+                                 "http://dbpedia.org/ontology/Company\n";
+        ASSERT_STREQ(content.c_str(), golden_classes_content.c_str());
         delete profiler;
     }
 
@@ -100,27 +100,55 @@ namespace {
         profiler = new Profiler(hdt_file);
         profiler->set_logger(log_file);
         profiler->set_base_gen_dir(p_test_dir);
-        ASSERT_STREQ(profiler->get_base_gen_dir().c_str(),p_test_dir.c_str());
+        ASSERT_STREQ(profiler->get_base_gen_dir().c_str(), p_test_dir.c_str());
         profiler->profile_classes();
         profiler->profile_properties();
         ifstream input;
         string boxer_properties_dir;
-        boxer_properties_dir = profiler->merge_dirs(profiler->get_base_gen_dir(),profiler->get_properties_all_dir());
-        boxer_properties_dir = profiler->merge_dirs(boxer_properties_dir,"Boxer.txt");
+        boxer_properties_dir = profiler->merge_dirs(profiler->get_base_gen_dir(), profiler->get_properties_all_dir());
+        boxer_properties_dir = profiler->merge_dirs(boxer_properties_dir, "Boxer.txt");
         cout << "Boxer properties dir: "<<boxer_properties_dir<<endl;
         input.open(boxer_properties_dir.c_str());
         ASSERT_TRUE(input.good());
         string content="", line;
-        while(getline(input, line)){
+        while(getline(input, line)) {
             content += line+"\n";
         }
         cout <<"content: \n"<<content<<endl;
-        string golden_content;
-        golden_content = "http://dbpedia.org/property/height\n"
-            "http://dbpedia.org/property/weight\n";
-        ASSERT_NE(content.find("http://dbpedia.org/property/height"),std::string::npos);
-        ASSERT_NE(content.find("http://dbpedia.org/property/weight"),std::string::npos);
-        ASSERT_EQ(content.find("http://dbpedia.org/property/NEW"),std::string::npos);
+        ASSERT_NE(content.find("http://dbpedia.org/property/height"), std::string::npos);
+        ASSERT_NE(content.find("http://dbpedia.org/property/weight"), std::string::npos);
+        ASSERT_NE(content.find("http://www.w3.org/2000/01/rdf-schema#label"), std::string::npos);
+        ASSERT_NE(content.find("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), std::string::npos);
+        ASSERT_EQ(content.find("http://dbpedia.org/property/NEW"), std::string::npos);
+        delete profiler;
+    }
+
+    TEST(ProfilerTest, profile_numeric_properties) {
+        Profiler* profiler;
+        profiler = new Profiler(hdt_file);
+        profiler->set_logger(log_file);
+        profiler->set_base_gen_dir(p_test_dir);
+        ASSERT_STREQ(profiler->get_base_gen_dir().c_str(), p_test_dir.c_str());
+        profiler->profile_classes();
+        profiler->profile_properties();
+        profiler->profile_numeric_properties();
+        ifstream input;
+        string boxer_properties_dir;
+        boxer_properties_dir = profiler->merge_dirs(profiler->get_base_gen_dir(), profiler->get_properties_num_dir());
+        boxer_properties_dir = profiler->merge_dirs(boxer_properties_dir, "Boxer.txt");
+        cout << "Boxer properties dir: "<<boxer_properties_dir<<endl;
+        input.open(boxer_properties_dir.c_str());
+        ASSERT_TRUE(input.good());
+        string content="", line;
+        while(getline(input, line)) {
+            content += line+"\n";
+        }
+        cout <<"content: \n"<<content<<endl;
+        ASSERT_NE(content.find("http://dbpedia.org/property/height"), std::string::npos);
+        ASSERT_NE(content.find("http://dbpedia.org/property/weight"), std::string::npos);
+        ASSERT_EQ(content.find("http://www.w3.org/2000/01/rdf-schema#label"), std::string::npos);
+        ASSERT_EQ(content.find("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), std::string::npos);
+        ASSERT_EQ(content.find("http://dbpedia.org/property/NEW"), std::string::npos);
         delete profiler;
     }
 
@@ -132,6 +160,21 @@ namespace {
         ASSERT_STREQ("/home/ubuntu/docs", profiler->merge_dirs("/home/ubuntu/", "docs").c_str());
         ASSERT_STREQ("/home/ubuntu/docs", profiler->merge_dirs("/home/ubuntu", "/docs").c_str());
         ASSERT_STREQ("/home/ubuntu/docs", profiler->merge_dirs("/home/ubuntu/", "/docs").c_str());
+    }
+
+    TEST(ProfilerTest, str_to_double) {
+        Profiler* profiler;
+        profiler = new Profiler();
+        profiler->set_logger(log_file);
+        string s = "\"204.0\"^^<http://dbpedia.org/datatype/centimetre>";
+        ASSERT_TRUE(profiler->is_double(s));
+//        ASSERT_EQ(v, 204.0);
+        ASSERT_FALSE(profiler->is_double("'a2.0"));
+        ASSERT_FALSE(profiler->is_double("_a2.0"));
+        ASSERT_TRUE(profiler->is_double("204a.4"));
+//        ASSERT_EQ(204, v);
+        ASSERT_FALSE(profiler->is_double(".123aa"));
+        delete profiler;
     }
 
 

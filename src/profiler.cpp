@@ -88,14 +88,18 @@ std::list<string>* Profiler::get_class_properties(string class_uri){
         }
     }
     m_logger->log("get_class_properties> included "+to_string(properties->size())+" out of "+to_string(prop_counts->size())+" properties");
+    delete instances;
+    delete prop_counts;
     return properties;
 }
 
 
 std::list<string>* Profiler::get_instances(string class_uri){
     std::list<string> *instances = new std::list<string>;
-    hdt::IteratorTripleString *it = m_hdt->search("", rdf_type.c_str(),class_uri.c_str());
+    hdt::IteratorTripleString *it;
     hdt::TripleString *triple;
+    m_logger->log("get_instances> get instances of the class: <"+class_uri+"> ");
+    it = m_hdt->search("", rdf_type.c_str(),class_uri.c_str());
     while(it->hasNext()){
         triple = it->next();
         instances->push_back(triple->getSubject());
@@ -236,3 +240,144 @@ string Profiler::get_properties_all_dir(){
 string Profiler::get_properties_num_dir(){
     return m_properties_num_dir;
 }
+
+void Profiler::profile_numeric_properties(){
+    std::list<string>* classes = get_unfiltered_classes();
+    for(auto it=classes->cbegin();it!=classes->cend();it++){
+        profile_numeric_class_properties(*it);
+    }
+    delete classes;
+}
+
+std::list<string>* Profiler::get_unfiltered_classes(){
+    std::list<string>* classes = new std::list<string>;
+    ifstream input;
+    string classes_fdir, line, class_dir, base_dir;
+    classes_fdir = merge_dirs(get_base_gen_dir(),get_classes_fname());
+    input.open(classes_fdir);
+    if(input.good()){
+        base_dir = merge_dirs(get_base_gen_dir(),get_properties_num_dir());
+        while(getline(input,line)){
+            class_dir = merge_dirs(base_dir, get_fname_from_uri(line));
+            if(!file_exists(class_dir)){
+                classes->push_back(line);
+            }
+            else{
+                m_logger->log("get_unfiltered_classes> "+line+" is already computed");
+            }
+        }//while
+    }//if
+    else{
+        m_logger->log("get_unfiltered_classes> error: unable to open: "+classes_fdir);
+    }
+    m_logger->log("get_unfiltered_classes> num of unfiltered classes: "+to_string(classes->size()));
+    return classes;
+}
+
+
+void Profiler::profile_numeric_class_properties(string class_uri){
+    std::list<string> *properties = get_properties_from_file(merge_dirs((merge_dirs(get_base_gen_dir(),get_properties_all_dir())),get_fname_from_uri(class_uri)));
+    std::list<string>* instances = get_instances(class_uri);
+    hdt::IteratorTripleString *itt;
+    hdt::TripleString *triple;
+    std::list<string> *objects = new std::list<string>;
+    string fdir;
+    ofstream out;
+    fdir = merge_dirs(get_base_gen_dir(),get_properties_num_dir());
+    fdir = merge_dirs(fdir, get_fname_from_uri(class_uri));
+    out.open(fdir);
+    m_logger->log("profile_numeric_class_properties> class_uri: "+class_uri);
+    m_logger->log("profile_numeric_class_properties> num of instances: "+to_string(instances->size()));
+    for(auto it=properties->cbegin();it!=properties->cend();it++){
+        for(auto it2=instances->cbegin();it2!=instances->cend();it2++){
+            itt = m_hdt->search((*it2).c_str(), (*it).c_str(),"");
+            while(itt->hasNext()){
+                triple = itt->next();
+                objects->push_back(triple->getObject());
+            }
+            delete itt;
+        }
+        if(are_numeric(objects)){
+             m_logger->log("profile_numeric_class_properties> num of objects for the numeric property: "+(*it)+" is "+to_string(objects->size()));
+            out << (*it) <<endl;
+        }
+        else{
+            m_logger->log("profile_numeric_class_properties> num of objects for the non-numeric property: "+(*it)+" is "+to_string(objects->size()));
+        }
+        objects->clear();
+
+    }
+    out.close();
+    delete objects;
+    delete properties;
+    delete instances;
+}
+
+bool Profiler::are_numeric(std::list<string>* objects){
+    long nums=0, literals=0;
+    for(auto it=objects->cbegin();it!=objects->cend();it++){
+        if(is_double(*it)){
+            nums++;
+        }
+        else{
+            literals++;
+        }
+    }
+    return nums > literals;
+}
+
+
+bool Profiler::is_double(string s){
+    int i;
+    string num_str="";
+    bool got_dec=false;
+    for(i=0;i<s.length();i++){
+        if(s[i]>='0' && s[i]<='9'){
+            num_str += s[i];
+        }
+        else if(s[i]=='.' && !got_dec){
+                num_str += s[i];
+                got_dec = true;
+                if(num_str[0]=='.'){ // if the str starts with a .
+                    return false;
+                }
+        }
+        else if(s[i]!='\'' && s[i]!='"'){
+            break;
+        }
+    }
+    if(num_str=="" || num_str=="."){
+        return false;
+    }
+    else{
+        strtod(num_str.c_str(), nullptr); // just to make sure it fails if the string is not double
+//        val = strtod(num_str.c_str(), nullptr);
+        return true;
+    }
+}
+
+std::list<string>* Profiler::get_properties_from_file(string fdir){
+    ifstream input;
+    string line;
+    std::list<string>* properties = new std::list<string>;
+    input.open(fdir);
+    if(input.good()){
+        m_logger->log("get_properties_from_file> "+fdir);
+        while(getline(input, line)){
+            properties->push_back(line);
+        }
+    }
+    else{
+        m_logger->log("get_properties_from_file> error opening the file: "+fdir);
+    }
+    m_logger->log("get_properties_from_file> num of properties: "+to_string(properties->size()));
+    return properties;
+}
+
+
+
+
+
+
+
+

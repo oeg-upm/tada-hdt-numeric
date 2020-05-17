@@ -30,11 +30,15 @@ class Profiler{
     void set_logger(string);
     void profile_classes();
     void profile_properties();
+    void profile_class_properties(string);
+    void profile_numeric_properties();
+    void profile_numeric_class_properties(string);
+    std::list<string>* get_unfiltered_classes();
     std::list<string>* get_classes_from_hdt();
     std::list<string>* get_unprocessed_classes();
-    void profile_class_properties(string);
     std::list<string>* get_instances(string class_uri);
     std::list<string>* get_class_properties(string class_uri);
+    std::list<string>* get_properties_from_file(string);
     void set_dir_sep(string sep);
     string get_dir_sep();
     string merge_dirs(string base_dir, string relative_dir);
@@ -48,6 +52,9 @@ class Profiler{
     string get_fname_from_uri(string);
     string get_properties_all_dir();
     string get_properties_num_dir();
+//    bool str_to_double(string s, double & val);
+    bool is_double(string s);
+    bool are_numeric(std::list<string>*);
   private:
     void write_classes(std::list<string>*);
     EasyLogger* m_logger=nullptr;
